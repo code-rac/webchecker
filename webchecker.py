@@ -17,6 +17,7 @@ USER_AGENTS = open('user-agents.txt').read().split('\n')
 
 CACHE_EVENT_URL = {}
 CACHE_START_EVENT = []
+CACHE_URL_TIMESTAMP = {}
 
 class Checker(threading.Thread):
 
@@ -84,6 +85,9 @@ class Checker(threading.Thread):
                 else:
                     metadata['type'] = 'Down'
                 return [metadata]
+            else:
+                self.url.update_time_response(url_id, last_datapoint['time_response'])
+                return []
         else:
             metadata = {
                 'end_status_code': None,
@@ -126,6 +130,20 @@ class Checker(threading.Thread):
                     print(metadata)
                     yield metadata
 
+    def assert_cache_url_timestamp(self, url_id):
+        if url_id not in CACHE_URL_TIMESTAMP:
+            last_datapoint = self.event.get_last_datapoint(url_id)
+            if last_datapoint:
+                CACHE_URL_TIMESTAMP.update({url_id: last_datapoint['timestamp']})
+
+    def update_master_url_uptime(self, url_id):
+        last_datapoint = self.datapoints[len(self.datapoints)-1]
+        if last_datapoint['status_code'] < 400:
+            timestamp = last_datapoint['timestamp']
+            prev_timestamp = CACHE_URL_TIMESTAMP[url_id]
+            CACHE_URL_TIMESTAMP[url_id] = timestamp
+            self.master_url.increase_up_time(url_id, timestamp - prev_timestamp)
+
     def request(self, url):
         headers = {'User-agent': random.choice(USER_AGENTS)}
         for i in range(N_EPOCHS):
@@ -153,8 +171,14 @@ class Checker(threading.Thread):
         while 1:
             id, url = self.get_one_job()
             if id:
+                self.assert_cache_url_timestamp(id)
+
                 datapoint_generator = self.datapoint_generator(id, url)
                 self.event.insert(datapoint_generator)
+
+                self.assert_cache_url_timestamp(id)
+                self.update_master_url_uptime(id)
+                
                 event_generator = self.event_generator(id)
                 self.event.insert(event_generator)
             time.sleep(GAP)
