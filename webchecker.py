@@ -104,9 +104,9 @@ class Checker(threading.Thread):
             }
 
             if metadata['start_status_code'] == 200:
-                self.url.update_status(1, url_id, last_datapoint['time_response'], metadata['start_status_code'])
+                self.url.update(1, url_id, last_datapoint['time_response'], metadata['start_status_code'])
             else:
-                self.url.update_status(0, url_id, last_datapoint['time_response'], metadata['start_status_code'])
+                self.url.update(0, url_id, last_datapoint['time_response'], metadata['start_status_code'])
                       
             if metadata['start_status_code'] < 400:
                 metadata['type'] = 'Up'
@@ -178,7 +178,7 @@ class Checker(threading.Thread):
 
                 self.assert_cache_url_timestamp(id)
                 self.update_master_url_uptime(id)
-                
+
                 event_generator = self.event_generator(id)
                 self.event.insert(event_generator)
             time.sleep(GAP)
