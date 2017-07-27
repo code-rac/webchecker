@@ -130,9 +130,10 @@ class Checker(threading.Thread):
                     print(metadata)
                     yield metadata
 
-    def assert_cache_url_timestamp(self, url_id):
+    def assert_cache_url_timestamp(self, url_id, last_datapoint=None):
         if url_id not in CACHE_URL_TIMESTAMP:
-            last_datapoint = self.event.get_last_datapoint(url_id)
+            if not last_datapoint:
+                last_datapoint = self.event.get_last_datapoint(url_id)
             if last_datapoint:
                 CACHE_URL_TIMESTAMP.update({url_id: last_datapoint['timestamp']})
 
@@ -176,7 +177,7 @@ class Checker(threading.Thread):
                 datapoint_generator = self.datapoint_generator(id, url)
                 self.event.insert(datapoint_generator)
 
-                self.assert_cache_url_timestamp(id)
+                self.assert_cache_url_timestamp(id, self.datapoints[len(self.datapoints)-1])
                 self.update_master_url_uptime(id)
 
                 event_generator = self.event_generator(id)
