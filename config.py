@@ -22,7 +22,7 @@ class Config:
         for c in range(N_MYSQL_CONNECTIONS):
             try:
                 mysql_conn = pymysql.connect(
-                    host=HOST, user='root', password='vnistadmin', db='webix', charset='utf8mb4')
+                    host=HOST, user='root', password='aaaa', db='aaaa', charset='utf8mb4')
                 mysql_cur = mysql_conn.cursor()
             except:
                 time.sleep(1)
