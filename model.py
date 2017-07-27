@@ -54,14 +54,14 @@ class Url:
         conn.commit()
         config.append_mysql(conn, cur)
 
-    def update_time_response(self, time_response, url_id):
-        conn, cur = config.get_mysql()
-        cur.execute('UPDATE `urls` SET time_response=\'%s\' WHERE id=%s' % (
-            time_response,
-            url_id
-        ))
-        conn.commit()
-        config.append_mysql(conn, cur)
+    # def update_time_response(self, time_response, url_id):
+    #     conn, cur = config.get_mysql()
+    #     cur.execute('UPDATE `urls` SET time_response=\'%s\' WHERE id=%s' % (
+    #         time_response,
+    #         url_id
+    #     ))
+    #     conn.commit()
+    #     config.append_mysql(conn, cur)
 
 class Master:
     def __init__(self):
@@ -85,20 +85,19 @@ class MasterUrl:
         config.append_mysql(conn, cur)
         return result
 
-    # Start thanh's code
-    def increase_up_time(self, url_id, interval):
-        conn, cur = config.get_mysql()
-        query = 'UPDATE master_urls SET up_time=uptime+%d WHERE url_id=%d' % (int(interval), url_id)
-        cur.execute(query)
-        config.append_mysql(conn, cur)
-        print(time.ctime(time.time())),
-        print(query)
-    # End thanh's code
+    # def increase_up_time(self, url_id, interval):
+    #     conn, cur = config.get_mysql()
+    #     query = 'UPDATE master_urls SET up_time=uptime+%d WHERE url_id=%d' % (int(interval), url_id)
+    #     cur.execute(query)
+    #     config.append_mysql(conn, cur)
+    #     print(time.ctime(time.time())),
+    #     print(query)
 
 def reload():
     config.reload()        
 
 class Event:
+    
     def __init__(self):
         pass
 
@@ -118,21 +117,19 @@ class Event:
             yield {'url_id': item['_source']['url_id'], 'user_id': item['_source']['user_id']}
         config.append_es(es)
 
-    # Start thanh's code
-    def get_last_datapoint(self, url_id):
-        es = config.get_es()
-        query = {
-            'query': {'match': {'url_id':url_id}},
-            'size' : 1,
-            'sort' : [{'timestamp':{'order':'desc'}}]
-        }
-        result = es.search(index='webassistant3', doc_type='datapoint', body=query)['hits']['hits']
-        if len(result) == 0:
-            result = None
-        else:
-            result = result[0]['_source']
-        config.append_es(es)
-    # End thanh's code
+    # def get_last_datapoint(self, url_id):
+    #     es = config.get_es()
+    #     query = {
+    #         'query': {'match': {'url_id':url_id}},
+    #         'size' : 1,
+    #         'sort' : [{'timestamp':{'order':'desc'}}]
+    #     }
+    #     result = es.search(index='webassistant3', doc_type='datapoint', body=query)['hits']['hits']
+    #     if len(result) == 0:
+    #         result = None
+    #     else:
+    #         result = result[0]['_source']
+    #     config.append_es(es)
 
 if __name__ == '__main__':
     Event().get_last_datapoint(217)

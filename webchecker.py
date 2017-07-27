@@ -17,7 +17,7 @@ USER_AGENTS = open('user-agents.txt').read().split('\n')
 
 CACHE_EVENT_URL = {}
 CACHE_START_EVENT = []
-CACHE_URL_TIMESTAMP = {} # {url_id: # timestamp of last_datapoint}
+# CACHE_URL_TIMESTAMP = {} # {url_id: # timestamp of last_datapoint}
 
 class Checker(threading.Thread):
 
@@ -85,9 +85,9 @@ class Checker(threading.Thread):
                 else:
                     metadata['type'] = 'Down'
                 return [metadata]
-            else:
-                self.url.update_time_response(last_datapoint['time_response'], url_id)
-                return []
+            # else:
+            #     self.url.update_time_response(last_datapoint['time_response'], url_id)
+            #     return []
         else:
             metadata = {
                 'end_status_code': None,
@@ -130,21 +130,19 @@ class Checker(threading.Thread):
                     print(metadata)
                     yield metadata
 
-    # Start thanh's code
-    def assert_cache_url_timestamp(self, url_id):
-        global CACHE_URL_TIMESTAMP
-        if url_id not in CACHE_URL_TIMESTAMP:
-            last_datapoint = self.event.get_last_datapoint(url_id)
-            if last_datapoint:
-                CACHE_URL_TIMESTAMP[url_id] = last_datapoint['timestamp']
+    # def assert_cache_url_timestamp(self, url_id):
+    #     global CACHE_URL_TIMESTAMP
+    #     if url_id not in CACHE_URL_TIMESTAMP:
+    #         last_datapoint = self.event.get_last_datapoint(url_id)
+    #         if last_datapoint:
+    #             CACHE_URL_TIMESTAMP[url_id] = last_datapoint['timestamp']
 
-    def update_master_url_up_time(self, url_id):
-        global CACHE_URL_TIMESTAMP
-        timestamp = self.datapoints[len(self.datapoints)-1]['timestamp']
-        previous_timestamp = CACHE_URL_TIMESTAMP[url_id]
-        CACHE_URL_TIMESTAMP[url_id] = timestamp
-        self.master_url.increase_up_time(url_id, timestamp - previous_timestamp)
-    # End thanh's code
+    # def update_master_url_up_time(self, url_id):
+    #     global CACHE_URL_TIMESTAMP
+    #     timestamp = self.datapoints[len(self.datapoints)-1]['timestamp']
+    #     previous_timestamp = CACHE_URL_TIMESTAMP[url_id]
+    #     CACHE_URL_TIMESTAMP[url_id] = timestamp
+    #     self.master_url.increase_up_time(url_id, timestamp - previous_timestamp)
 
     def request(self, url):
         headers = {'User-agent': random.choice(USER_AGENTS)}
@@ -173,21 +171,13 @@ class Checker(threading.Thread):
         while 1:
             id, url = self.get_one_job()
             if id:
-                # Start thanh's code
-                self.assert_cache_url_timestamp(id)
-                # End thanh's code
-
+                # self.assert_cache_url_timestamp(id)
                 datapoint_generator = self.datapoint_generator(id, url)
                 self.event.insert(datapoint_generator)
-
-                # Start thanh's code
-                self.assert_cache_url_timestamp(id)
-                self.update_master_url_up_time(id)
-                # End thanh's code
-
+                # self.assert_cache_url_timestamp(id)
+                # self.update_master_url_up_time(id)
                 event_generator = self.event_generator(id)
                 self.event.insert(event_generator)
-
             time.sleep(GAP)
 
 class WebChecker():
@@ -197,8 +187,7 @@ class WebChecker():
         self.event = Event()
 
     def decon(self):
-        new_threads = int(self.url.count() / N_BATCHES *
-                          SAFETY_PARAM) - threading.active_count()
+        new_threads = int(self.url.count() / N_BATCHES * SAFETY_PARAM) - threading.active_count()
         if new_threads > 0:
             for i in range(new_threads):
                 print('Start new thread', threading.active_count())
@@ -208,19 +197,15 @@ class WebChecker():
 
     def reschedule(self):
         global JOBS
-
         urls = self.url.get()  # return ((1, u'http://vnist.vn'), (2, u'https://beta.vntrip.vn'), (3, u'https://vinhphuc1000.vn'), (4, u'https://lab.vnist.vn'))
         len_urls = len(urls)
-
         start_at = time.time()
         for i in range(0, len_urls, N_BATCHES):
-
             LOCK.acquire()
             JOBS += urls[0:N_BATCHES]
             LOCK.release()
             urls = urls[N_BATCHES:]
             print('Number of jobs =', len(JOBS))
-            # print '    continue in', INTERVAL / len_urls * N_BATCHES
             time.sleep(INTERVAL / len_urls * N_BATCHES)
 
         if len(urls):
