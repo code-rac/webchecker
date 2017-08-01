@@ -63,6 +63,16 @@ class Url:
         conn.commit()
         config.append_mysql(conn, cur)
 
+
+    def update_status(self, url_id, status):
+        conn, cur = config.get_mysql()
+        cur.execute('UPDATE `urls` SET status=%s WHERE id = %s' % (
+            status,
+            url_id
+        ))
+        conn.commit()
+        config.append_mysql(conn, cur)
+
 class Master:
     def __init__(self):
         pass
