@@ -209,7 +209,7 @@ class WebChecker():
             JOBS += urls[0:N_BATCHES]
             LOCK.release()
             urls = urls[N_BATCHES:]
-            print('Number of jobs =', len(JOBS))
+            print('Number of jobs =', len(JOBS), 'Number of threads =', threading.active_count())
             time.sleep(INTERVAL / len_urls * N_BATCHES)
 
         if len(urls):
