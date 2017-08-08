@@ -66,7 +66,7 @@ class Checker(threading.Thread):
                     'end_status_code': CACHE_EVENT_URL[url_id]['end_status_code'],
                     'start_status_code': last_datapoint['status_code'],
                     'time_response' : last_datapoint['time_response'],
-                    'prev_duration': timestamp - CACHE_EVENT_URL[url_id]['end_timestamp'],
+                    'prev_duration': (timestamp - CACHE_EVENT_URL[url_id]['end_timestamp']) * 1000,
                     'duration': 0,
                     'timestamp': timestamp,
                     'screenshot': None,
