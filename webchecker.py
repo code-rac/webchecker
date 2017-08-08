@@ -58,7 +58,7 @@ class Checker(threading.Thread):
         assert len(self.datapoints) > 0 and len(self.datapoints) <= N_EPOCHS
 
         last_datapoint = self.datapoints[len(self.datapoints)-1]
-        timestamp = time.time()
+        timestamp = time.time() * 1000
 
         if url_id in CACHE_EVENT_URL.keys():
             if CACHE_EVENT_URL[url_id]['end_status_code'] != last_datapoint['status_code']:
@@ -66,7 +66,7 @@ class Checker(threading.Thread):
                     'end_status_code': CACHE_EVENT_URL[url_id]['end_status_code'],
                     'start_status_code': last_datapoint['status_code'],
                     'time_response' : last_datapoint['time_response'],
-                    'prev_duration': (timestamp - CACHE_EVENT_URL[url_id]['end_timestamp']) * 1000,
+                    'prev_duration': timestamp - CACHE_EVENT_URL[url_id]['end_timestamp'],
                     'duration': 0,
                     'timestamp': timestamp,
                     'screenshot': None,
@@ -158,13 +158,13 @@ class Checker(threading.Thread):
                 data = {
                     'time_response': None,
                     'status_code': 408,
-                    'timestamp': time.time()
+                    'timestamp': time.time() * 1000
                 }
             else:
                 data = {
                     'time_response': r.elapsed.total_seconds(),
                     'status_code': r.status_code,
-                    'timestamp': time.time()
+                    'timestamp': time.time() * 1000
                 }
             finally:
                 yield data
@@ -246,14 +246,14 @@ class WebChecker():
                     'type' : 'Start',
                     'time_response': None,
                     'status_code': None,
-                    'timestamp': time.time(),
+                    'timestamp': time.time() * 1000,
                     'end_status_code': None,
                     'start_status_code': None,
                     'duration': -1,
                     'screenshot': None
                 }
                 CACHE_START_EVENT.append({'url_id': _url_id, 'user_id': _user_id})
-                print(metadata)
+                # print(metadata)
                 yield metadata
 
     def run(self):
