@@ -121,6 +121,34 @@ class Event:
             time.sleep(1)
         config.append_es(es)
 
+    def update_duration(self, url_id, duration):
+        body = {
+            'script' : {
+                'inline': 'ctx._source.duration = %s' % duration,
+                'lang' : 'painless'
+            },
+            'query' : {
+                'term' : {
+                    'url_id': url_id,
+                    'duration': 0
+                }
+            }
+        }
+        es = config.get_es()
+        while 1:
+            try:
+                es.update_by_query(index='webassistant3', doc_type='event', body=body)
+            except:
+                print(traceback.format_exc())
+                time.sleep(1)
+            else:
+                break
+
+        config.append_es(es)
+
+
+
+
     def get_start_events(self):
         es = config.get_es()
         query = {'query': {'match': {'type':'Start'}}}

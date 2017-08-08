@@ -66,7 +66,8 @@ class Checker(threading.Thread):
                     'end_status_code': CACHE_EVENT_URL[url_id]['end_status_code'],
                     'start_status_code': last_datapoint['status_code'],
                     'time_response' : last_datapoint['time_response'],
-                    'duration': timestamp - CACHE_EVENT_URL[url_id]['end_timestamp'],
+                    'prev_duration': timestamp - CACHE_EVENT_URL[url_id]['end_timestamp'],
+                    'duration': 0,
                     'timestamp': timestamp,
                     'screenshot': None,
                     'type': None
@@ -94,6 +95,7 @@ class Checker(threading.Thread):
                 'start_status_code': last_datapoint['status_code'],
                 'time_response' : last_datapoint['time_response'],
                 'duration': 0,
+                'prev_duration': 0,
                 'timestamp': timestamp,
                 'screenshot': None,
                 'type': None
@@ -117,6 +119,8 @@ class Checker(threading.Thread):
 
     def event_generator(self, url_id):
         for event in self.calculate_event(url_id):
+            if event['prev_duration']:
+                self.event.update_duration(url_id, event['prev_duration'])
             for _url_id, _user_id in USER_URLS:
                 if _url_id == url_id:
                     metadata = {
