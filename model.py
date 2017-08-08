@@ -136,6 +136,9 @@ class Event:
         }
         es = config.get_es()
         while 1:
+            print(time.ctime(time.time())),
+            print('url_id:', url_id),
+            print('duration:', duration),
             try:
                 es.update_by_query(index='webassistant3', doc_type='event', body=body)
             except:
