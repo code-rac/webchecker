@@ -128,10 +128,7 @@ class Event:
                 'lang' : 'painless'
             },
             'query' : {
-                'terms' : {
-                    'url_id': url_id,
-                    'duration': 0
-                }
+                'bool': {'must': [{'term' : {'url_id': url_id}},{'term' : {'duration': 0}}]}
             }
         }
         es = config.get_es()
