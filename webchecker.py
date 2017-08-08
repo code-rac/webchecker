@@ -193,6 +193,7 @@ class WebChecker():
     def __init__(self):
         self.url = Url()
         self.event = Event()
+        self.master_url = MasterUrl()
 
     def decon(self):
         new_threads = int(self.url.count() / N_BATCHES * SAFETY_PARAM) - threading.active_count()
@@ -253,10 +254,13 @@ class WebChecker():
                     'screenshot': None
                 }
                 CACHE_START_EVENT.append({'url_id': _url_id, 'user_id': _user_id})
+                self.master_url.update_created_at(_url_id)
                 # print(metadata)
                 yield metadata
 
-    def run(self):
+
+
+    def run(self):  
         self.load_start_events()
         while 1:
             reload()

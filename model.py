@@ -4,7 +4,11 @@ from config import Config
 from elasticsearch import helpers
 import traceback
 import time
+
 config = Config()
+
+def time_backward(t):
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(t))
 
 class User:
     def __init__(self):
@@ -101,8 +105,13 @@ class MasterUrl:
         cur.execute(query)
         conn.commit()
         config.append_mysql(conn, cur)
-        # print(time.ctime(time.time())),
-        # print(query)
+
+    def update_created_at(self, url_id, time=time.time()):
+        conn, cur = config.get_mysql()
+        query = 'UPDATE `master_urls` SET created_at="%s" WHERE url_id=%d AND created_at=NULL' % (time_backward(time), url_id)
+        cur.execute(query)
+        conn.commit()
+        config.append_mysql(conn, cur)
 
 def reload():
     config.reload()        
