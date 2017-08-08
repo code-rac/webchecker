@@ -5,7 +5,7 @@ from pprint import pprint
 import threading
 import random
 
-N_EPOCHS = 2  # request N_EPOCHS time each time
+N_EPOCHS = 5  # request N_EPOCHS time each time
 N_BATCHES = 10
 JOBS = []
 USER_URLS = []

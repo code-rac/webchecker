@@ -128,7 +128,7 @@ class Event:
                 'lang' : 'painless'
             },
             'query' : {
-                'term' : {
+                'terms' : {
                     'url_id': url_id,
                     'duration': 0
                 }
