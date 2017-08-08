@@ -101,8 +101,8 @@ class MasterUrl:
         cur.execute(query)
         conn.commit()
         config.append_mysql(conn, cur)
-        print(time.ctime(time.time())),
-        print(query)
+        # print(time.ctime(time.time())),
+        # print(query)
 
 def reload():
     config.reload()        

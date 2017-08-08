@@ -5,14 +5,14 @@ from pprint import pprint
 import threading
 import random
 
-N_EPOCHS = 5  # request N_EPOCHS time each time
-N_BATCHES = 6
+N_EPOCHS = 2  # request N_EPOCHS time each time
+N_BATCHES = 10
 JOBS = []
 USER_URLS = []
-INTERVAL = 300
+INTERVAL = 100
 LOCK = threading.Lock()
 GAP = 1
-SAFETY_PARAM = 3
+SAFETY_PARAM = 5
 USER_AGENTS = open('user-agents.txt').read().split('\n')
 
 CACHE_EVENT_URL = {}
