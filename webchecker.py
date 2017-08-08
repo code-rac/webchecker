@@ -249,7 +249,7 @@ class WebChecker():
                     'timestamp': time.time(),
                     'end_status_code': None,
                     'start_status_code': None,
-                    'duration': 0,
+                    'duration': -1,
                     'screenshot': None
                 }
                 CACHE_START_EVENT.append({'url_id': _url_id, 'user_id': _user_id})
