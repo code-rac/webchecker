@@ -6,10 +6,10 @@ import threading
 import random
 
 N_EPOCHS = 5  # request N_EPOCHS time each time
-N_BATCHES = 10
+N_BATCHES = 5
 JOBS = []
 USER_URLS = []
-INTERVAL = 100
+INTERVAL = 300
 LOCK = threading.Lock()
 GAP = 1
 SAFETY_PARAM = 5
@@ -255,7 +255,6 @@ class WebChecker():
                 }
                 CACHE_START_EVENT.append({'url_id': _url_id, 'user_id': _user_id})
                 self.master_url.update_created_at(_url_id)
-                # print(metadata)
                 yield metadata
 
 
