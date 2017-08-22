@@ -6,7 +6,7 @@ import threading
 import random
 
 N_EPOCHS = 5  # request N_EPOCHS time each time
-N_BATCHES = 5
+N_BATCHES = 15
 JOBS = []
 USER_URLS = []
 INTERVAL = 300
